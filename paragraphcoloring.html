@@ -1,0 +1,124 @@
+<!-- The object of this task is to color an input paragraph with random colors (not ordered in a particular way) 
+that we have also entered manualy. The colors should be randomly generated and neighboring letters should not have 
+have the same color. We also check if the last entered color exists in real time and we are informing the user.
+ -->
+
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Colorful Paragraph</title>
+	</head>
+	<body>
+			
+			<br>Please enter colors:<br>
+			<textarea rows="4" cols="50" id="getcolors" ></textarea>
+			<br>Please enter text:<br>
+			<textarea rows="4" cols="50" id="getparagraph" ></textarea>
+			<br>
+			<button onclick="collectInfo()">Output result</button>
+			<br>
+			<div id="status">Status:</div>
+			
+
+		<script type="text/javascript">
+
+			document.getElementById("getcolors").addEventListener("input", function(){
+				document.getElementById("status").textContent=checkColor(this.value);
+			});
+
+			function checkColor(colorLine){
+				
+				cleanColor=colorLine.replace(/;/g, ",");
+
+				var colorArray=cleanColor.split(",");
+				len=colorArray.length;
+				
+				if(!validTextColor(colorArray[len])){
+					return colorArray[len]+" is not a valid color name";
+				}
+				
+			}
+
+			//Generating random number which represents the color name
+			function colorGenerator(len){
+				return Math.floor(Math.random()*len);
+			}
+
+			//Changing the symbol color
+			function changeColor(color, ch){
+				document.write("<span style=\"color:"+color+"\">"+ ch+ "</span>");
+			}
+
+			//Removing harmful characters
+			function validateText(line){
+				var cleanString = line.replace(/[\|&;\$%@"<>\+,]/g, "");
+				return cleanString;
+			}
+
+			//Checking for possible color string names
+			function validTextColor(stringToTest) {
+			    
+			    if (stringToTest === "") { return false; }
+			    if (stringToTest === "inherit") { return false; }
+			    if (stringToTest === "transparent") { return false; }
+			    
+			    var image = document.createElement("img");
+			    image.style.color = "rgb(0, 0, 0)";
+			    image.style.color = stringToTest;
+			    if (image.style.color !== "rgb(0, 0, 0)") { return true; }
+			    image.style.color = "rgb(255, 255, 255)";
+			    image.style.color = stringToTest;
+			    return image.style.color !== "rgb(255, 255, 255)";
+			}
+			
+			//When we click the button we are gathering the input and 
+			function collectInfo() {
+				
+				var line=document.getElementById("getcolors").value || alert("You had to enter colors!");
+
+				var tmpLine=line.replace(/;/g,",");
+
+				var colors = tmpLine.split(",");
+
+				var len=colors.length;
+			
+				if(len<2){
+					alert("You have to enter more than 1 color!");
+				}
+
+				for(var i=0; i<colors.length; i++){
+					var isValid=validTextColor(colors[i]);
+					if(!isValid){
+						alert(colors[i]+" is not valid color name...");
+						break;
+					}
+					
+				}
+
+				
+				line=document.getElementById("getparagraph").value || alert("You have not entered any text..");
+
+				var para=line.split('');
+				
+				var prev = null;
+
+				//Coloring the paragraph
+			   	for(var i=0;i<para.length;i++){
+
+			   		var genColor=colorGenerator(len);
+
+			   		while(genColor==prev){
+			   			genColor=colorGenerator(len);
+			   		}
+
+			   		prev = genColor;
+			   		changeColor(colors[genColor], para[i]);		
+					
+				}
+			}
+
+		</script>	
+	</body>
+</html>
+
